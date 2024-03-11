@@ -2,21 +2,34 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 )
 
-type simpleServer struct {
+type SimpleServer struct {
 	address string
 	proxy   *httputil.ReverseProxy
 }
 
-func newSimpleServer(address string) *simpleServer {
+type Server interface {
+	Address() string
+	IsAlive() bool
+	Server(w http.ResponseWriter, r *http.Request)
+}
+
+type LoadBalancer struct {
+	port            string
+	roundRobinCount int
+	servers         []Server
+}
+
+func newSimpleServer(address string) *SimpleServer {
 	serverUrl, err := url.Parse(address)
 	handleErr(err)
 
-	return &simpleServer{
+	return &SimpleServer{
 		address: address,
 		proxy:   httputil.NewSingleHostReverseProxy(serverUrl),
 	}
