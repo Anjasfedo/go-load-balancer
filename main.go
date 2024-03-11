@@ -43,6 +43,14 @@ func NewLoadBalancer(port string, servers []Server) *LoadBalancer {
 	}
 }
 
+func (lb *LoadBalancer) getNextAvaiableServer() Server {
+
+}
+
+func (lb *LoadBalancer) serveProxy(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func handleErr(err error) {
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -51,5 +59,21 @@ func handleErr(err error) {
 }
 
 func main() {
+	servers := []Server{
+		newSimpleServer("https://www.youtube.com"),
+		newSimpleServer("https://www.github.com"),
+		newSimpleServer("https://www.facebook.com"),
+	}
 
+	lb := NewLoadBalancer("8080", servers)
+
+	handleRedirect := func(w http.ResponseWriter, r *http.Request) {
+		lb.serveProxy(w, r)
+	}
+
+	http.HandlerFunc("/", handleRedirect)
+
+	fmt.Printf("Serve on port %s\n", lb.port)
+
+	http.ListenAndServe(":"+lb.port, nil)
 }
