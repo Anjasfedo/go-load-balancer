@@ -43,6 +43,18 @@ func NewLoadBalancer(port string, servers []Server) *LoadBalancer {
 	}
 }
 
+func (s *SimpleServer) Address() string {
+	return s.address
+}
+
+func (s *SimpleServer) IsAlive() bool {
+	return true
+}
+
+func (s *SimpleServer) Serve(w http.ResponseWriter, r *http.Request) {
+	s.proxy.ServeHTTP(w, r)
+}
+
 func (lb *LoadBalancer) getNextAvaiableServer() Server {
 
 }
