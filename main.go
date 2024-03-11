@@ -1,9 +1,14 @@
 package main
 
-import {
+import (
+	"net/http/httputil"
+)
 
+type simpleServer struct {
+	address string
+	proxy   *httputil.ReverseProxy
 }
 
 func main() {
-	
+
 }
