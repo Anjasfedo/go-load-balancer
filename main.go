@@ -35,6 +35,14 @@ func newSimpleServer(address string) *SimpleServer {
 	}
 }
 
+func NewLoadBalancer(port string, servers []Server) *LoadBalancer {
+	return &LoadBalancer{
+		roundRobinCount: 0,
+		port:            port,
+		servers:         servers,
+	}
+}
+
 func handleErr(err error) {
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
