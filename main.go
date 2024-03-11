@@ -69,7 +69,7 @@ func (lb *LoadBalancer) getNextAvailableServer() Server {
 }
 
 func (lb *LoadBalancer) serveProxy(w http.ResponseWriter, r *http.Request) {
-	targetServer := lb.getNextAvaiableServer()
+	targetServer := lb.getNextAvailableServer()
 
 	fmt.Printf("forwarding request to %q\n", targetServer.Address())
 
@@ -96,7 +96,7 @@ func main() {
 		lb.serveProxy(w, r)
 	}
 
-	http.HandlerFunc("/", handleRedirect)
+	http.HandleFunc("/", handleRedirect)
 
 	fmt.Printf("Serve on port %s\n", lb.port)
 
