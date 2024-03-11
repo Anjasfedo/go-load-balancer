@@ -16,7 +16,7 @@ type SimpleServer struct {
 type Server interface {
 	Address() string
 	IsAlive() bool
-	Server(w http.ResponseWriter, r *http.Request)
+	Serve(w http.ResponseWriter, r *http.Request)
 }
 
 type LoadBalancer struct {
@@ -55,12 +55,25 @@ func (s *SimpleServer) Serve(w http.ResponseWriter, r *http.Request) {
 	s.proxy.ServeHTTP(w, r)
 }
 
-func (lb *LoadBalancer) getNextAvaiableServer() Server {
+func (lb *LoadBalancer) getNextAvailableServer() Server {
+	server := lb.servers[lb.roundRobinCount%len(lb.servers)]
 
+	for !server.IsAlive() {
+		lb.roundRobinCount++
+		server = lb.servers[lb.roundRobinCount%len(lb.servers)]
+	}
+
+	lb.roundRobinCount++
+
+	return server
 }
 
 func (lb *LoadBalancer) serveProxy(w http.ResponseWriter, r *http.Request) {
+	targetServer := lb.getNextAvaiableServer()
 
+	fmt.Printf("forwarding request to %q\n", targetServer.Address())
+
+	targetServer.Serve(w, r)
 }
 
 func handleErr(err error) {
